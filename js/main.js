@@ -13,6 +13,7 @@ import { DriftMarks } from './DriftMarks.js';
 import { GameAudio } from './Audio.js';
 import { LapTimer } from './LapTimer.js';
 import { ColorMapGLTFLoader } from './Loader.js';
+import { AIDriver } from './AIDriver.js';
 
 
 const renderer = new THREE.WebGLRenderer( { antialias: true, outputBufferType: THREE.HalfFloatType } );
@@ -154,7 +155,7 @@ async function init() {
 	scene.fog.near = groundSize * 0.4;
 	scene.fog.far = groundSize * 0.8;
 
-	buildTrack( scene, models, customCells );
+	const { obstacleMeshes } = buildTrack( scene, models, customCells );
 
 	// Probes
 
@@ -188,7 +189,7 @@ async function init() {
 	world._OL_MOVING = OL_MOVING;
 	world._OL_STATIC = OL_STATIC;
 
-	buildWallColliders( world, null, customCells );
+	const wallMeshes = buildWallColliders( world, null, customCells );
 
 	const roadHalf = groundSize / 2;
 	rigidBody.create( world, {
@@ -232,6 +233,7 @@ async function init() {
 	audio.init( cam.camera, vehicleGroup );
 
 	const lapTimer = new LapTimer( customCells, mapParam );
+	const aiDriver = new AIDriver( scene, customCells, wallMeshes, obstacleMeshes, cam.camera );
 
 	const _forward = new THREE.Vector3();
 	const _camLead = new THREE.Vector3();
@@ -260,7 +262,8 @@ async function init() {
 		timer.update();
 		const dt = Math.min( timer.getDelta(), 1 / 30 );
 
-		const input = controls.update();
+		const humanInput = controls.update();
+		const input = aiDriver.update( dt, vehicle, humanInput );
 
 		updateWorld( world, contactListener, dt );
 
@@ -279,7 +282,7 @@ async function init() {
 		driftMarks.update( dt, vehicle );
 		audio.update( dt, vehicle.linearSpeed / MAX_SPEED, input.z, vehicle.driftIntensity );
 
-		const hasInput = input.touchActive || Math.abs( input.x ) > 0.05 || Math.abs( input.z ) > 0.05;
+		const hasInput = aiDriver.enabled || input.touchActive || Math.abs( input.x ) > 0.05 || Math.abs( input.z ) > 0.05;
 		lapTimer.update( dt, vehicle.spherePos, hasInput );
 
 		renderer.render( scene, cam.camera );

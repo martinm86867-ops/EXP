@@ -277,6 +277,8 @@ export function buildTrack( scene, models, customCells ) {
 
 	} );
 
+	const obstacleMeshes = [];
+
 	if ( ! customCells ) {
 
 		for ( const [ key, x, y, z, rotDeg ] of NPC_TRUCKS ) {
@@ -293,6 +295,7 @@ export function buildTrack( scene, models, customCells ) {
 
 					c.castShadow = true;
 					c.receiveShadow = true;
+					obstacleMeshes.push( c );
 
 				}
 
@@ -302,6 +305,8 @@ export function buildTrack( scene, models, customCells ) {
 		}
 
 	}
+
+	return { trackGroup, obstacleMeshes };
 
 }
 

@@ -16,6 +16,20 @@ function addDebugBox( group, halfExtents, position, quaternion ) {
 
 export function buildWallColliders( world, debugGroup, customCells ) {
 
+	const wallMeshes = [];
+	const _boxMat = new THREE.MeshBasicMaterial( { visible: false } );
+
+	function recordWallMesh( halfExtents, position, quaternion ) {
+
+		const geo = new THREE.BoxGeometry( halfExtents[ 0 ] * 2, halfExtents[ 1 ] * 2, halfExtents[ 2 ] * 2 );
+		const mesh = new THREE.Mesh( geo, _boxMat );
+		mesh.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
+		if ( quaternion ) mesh.quaternion.set( quaternion[ 0 ], quaternion[ 1 ], quaternion[ 2 ], quaternion[ 3 ] );
+		mesh.updateMatrixWorld( true );
+		wallMeshes.push( mesh );
+
+	}
+
 	const S = GRID_SCALE;
 	const CELL_HALF = CELL_RAW / 2;
 
@@ -62,6 +76,7 @@ export function buildWallColliders( world, debugGroup, customCells ) {
 			} );
 
 			if ( debugGroup ) addDebugBox( debugGroup, halfExtents, position, quaternion );
+			recordWallMesh( halfExtents, position, quaternion );
 
 		}
 
@@ -97,11 +112,12 @@ export function buildWallColliders( world, debugGroup, customCells ) {
 					objectLayer: world._OL_STATIC,
 					position,
 					quaternion,
-					friction: 0.0,
-					restitution: 0.1,
+					friction: 0.05,
+					restitution: 0.2,
 				} );
 
 				if ( debugGroup ) addDebugBox( debugGroup, halfExtents, position, quaternion );
+				recordWallMesh( halfExtents, position, quaternion );
 
 			}
 
@@ -118,21 +134,38 @@ export function buildWallColliders( world, debugGroup, customCells ) {
 
 	}
 
+	return wallMeshes;
+
 }
 
 export function createSphereBody( world, spawnPos ) {
+
+	let pos = [ 3.5, 0.5, 5 ];
+	if ( Array.isArray( spawnPos ) ) {
+
+		pos = spawnPos;
+
+	} else if ( typeof spawnPos === 'number' ) {
+
+		pos = [ spawnPos, arguments[ 2 ] !== undefined ? arguments[ 2 ] : 0.5, arguments[ 3 ] !== undefined ? arguments[ 3 ] : 5 ];
+
+	} else if ( spawnPos && typeof spawnPos.x === 'number' ) {
+
+		pos = [ spawnPos.x, spawnPos.y, spawnPos.z ];
+
+	}
 
 	const body = rigidBody.create( world, {
 		shape: sphere.create( { radius: 0.5 } ),
 		motionType: MotionType.DYNAMIC,
 		objectLayer: world._OL_MOVING,
-		position: spawnPos || [ 3.5, 0.5, 5 ],
-		mass: 1000.0,
-		friction: 5.0,
-		restitution: 0.1,
-		linearDamping: 0.1,
-		angularDamping: 4.0,
-		gravityFactor: 1.5,
+		position: pos,
+		mass: 750.0,
+		friction: 3.0,
+		restitution: 0.15,
+		linearDamping: 0.12,
+		angularDamping: 3.5,
+		gravityFactor: 2.2,
 		motionQuality: MotionQuality.LINEAR_CAST,
 	} );
 
