@@ -1,0 +1,8 @@
+{
+  "name": "Starter Kit Racing",
+  "description": "A 3D arcade racing game and track editor built with Three.js and Crashcat physics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

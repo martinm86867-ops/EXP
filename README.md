@@ -1,11 +1,13 @@
-<div align="center">
+# Starter Kit Racing
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A JavaScript/Three.js port of [Kenney's Starter Kit Racing](https://github.com/KenneyNL/Starter-Kit-Racing).
 
-  <h1>Built with AI Studio</h2>
+[Play](https://mrdoob.github.io/Starter-Kit-Racing/) · [Devlog](https://x.com/mrdoob/status/2048358619985690935)
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+![Screenshot](screenshot.png)
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Credits
 
-</div>
+- Game assets by [Kenney](https://kenney.nl/) (CC0)
+- Physics engine: [crashcat](https://github.com/isaac-mason/crashcat)
+- Ported to JavaScript with [Claude](https://claude.ai/)
